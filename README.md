@@ -40,7 +40,8 @@
 
   После был написан код в файле для router.go, в котором будут прописаны машруты
   
-<img width="860" height="503" alt="Снимок экрана 2025-10-21 124711" src="https://github.com/user-attachments/assets/a3fba81d-ec14-491e-8efd-fb4bc6eaea12" />
+![Screenshot_20251021_195148_Termius](https://github.com/user-attachments/assets/da04e222-10c6-4972-a073-9a6e66b6a426)
+
 
   А так же написан код в файле для handlers.go
   
