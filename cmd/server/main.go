@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Peacemaker-DB/GoPracZ6-BorisovDA/internal/db"
-	"github.com/Peacemaker-DB/GoPracZ6-BorisovDA/internal/httpapi"
-	"github.com/Peacemaker-DB/GoPracZ6-BorisovDA/internal/models"
+	"example.com/pz6-gorm/internal/db"
+	httpapi "example.com/pz6-gorm/internal/http"
+	"example.com/pz6-gorm/internal/models"
 )
 
 func main() {
