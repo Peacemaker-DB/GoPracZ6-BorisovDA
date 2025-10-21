@@ -133,7 +133,7 @@ func (h *Handlers) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]string{"message": "поьзователь и его заметки удалены})
+	writeJSON(w, http.StatusOK, map[string]string{"message": "поьзователь и его заметки удалены"})
 }
 
 type createNoteReq struct {
