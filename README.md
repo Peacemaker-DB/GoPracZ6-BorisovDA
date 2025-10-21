@@ -38,7 +38,7 @@
   
 <img width="712" height="741" alt="Снимок экрана 2025-10-21 124531" src="https://github.com/user-attachments/assets/da1cdb5a-2a40-4517-b1fe-e0e90fd40a6d" />
 
-  После был написан код в файле для router.go, в котором будут прописаны машруты
+  После был написан код в файле для router.go, в котором будут прописаны машруты, адрес http://denisb1995.fvds.ru
   
 ![Screenshot_20251021_195148_Termius](https://github.com/user-attachments/assets/da04e222-10c6-4972-a073-9a6e66b6a426)
 
