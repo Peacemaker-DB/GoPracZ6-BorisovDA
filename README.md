@@ -44,6 +44,39 @@
 
   А так же написан код в файле для handlers.go
   
-  Затем для проверки выполнения практики был осуществлен запуск проекта
+  Затем для проверки выполнения практики был осуществлен запуск проекта и проверка CRUD
 
-<img width="731" height="676" alt="Снимок экрана 2025-10-21 114130" src="https://github.com/user-attachments/assets/68ff1326-2a4c-4408-8ed5-47e6f394eff4" />
+Проверка на доступ к серверу
+
+  <img width="493" height="131" alt="изображение" src="https://github.com/user-attachments/assets/cbbb128a-9f15-40d4-be0d-608f50a41b98" />
+
+Проверка на создание пользователя
+
+<img width="525" height="434" alt="изображение" src="https://github.com/user-attachments/assets/eee1bc5d-f523-4c2b-a62a-068015f39317" />
+
+Вывод созданного пользователя
+
+<img width="695" height="224" alt="изображение" src="https://github.com/user-attachments/assets/adbfc1be-0147-4314-99e1-f7f3015a19df" />
+
+Удаление созданного пользователя 
+
+<img width="484" height="427" alt="изображение" src="https://github.com/user-attachments/assets/520484d0-6f3a-4dd5-bf9c-084ec0318c6c" />
+
+Создание заметки 
+
+<img width="472" height="815" alt="изображение" src="https://github.com/user-attachments/assets/97a352ef-da79-4669-80e3-8d19b1ab464c" />
+
+
+Вывод всех созданных заметок
+
+<img width="527" height="637" alt="изображение" src="https://github.com/user-attachments/assets/acac76b6-19f5-4f63-86ce-0580ceeb3f85" />
+
+Удаление заметки
+
+<img width="424" height="598" alt="изображение" src="https://github.com/user-attachments/assets/7d945567-f90a-4a4a-9797-d811e23afcf0" />
+
+
+
+
+
+
