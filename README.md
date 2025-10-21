@@ -1,5 +1,5 @@
 [README.md](https://github.com/user-attachments/files/23018291/README.md)
-# Практическое задание № 5 Борисов Денис Александрович ЭФМО-01-25
+# Практическое задание № 6 Борисов Денис Александрович ЭФМО-01-25
 
 Цели:
 
@@ -13,7 +13,7 @@
 1.	Установить и настроить PostgreSQL локально.
    Для выполнения задания на сервер был установлен postgresSQL и Go
   	
-<img width="558" height="122" alt="Снимок экрана 2025-10-21 021739" src="https://github.com/user-attachments/assets/6dc4ad09-e753-49c8-bbd3-e91b471172a6" />
+<img width="558" height="122" alt="Снимок экрана 2025-10-21 021739" src="https://github.com/user-attachments/assets/c5184ba4-e795-41e3-8b60-602c29dd7963" />
 
 2.	Подключиться к БД из Go с помощью database/sql и драйвера PostgreSQL.
   Поссле был выполнен вход в пространство PostgresSQL
