@@ -37,7 +37,6 @@ func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, u)
 }
 
-// GetUserByID получает пользователя по ID
 func (h *Handlers) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -47,13 +46,12 @@ func (h *Handlers) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	}
 	var user models.User
 	if err := h.db.First(&user, id).Error; err != nil {
-		writeErr(w, http.StatusNotFound, "user not found")
+		writeErr(w, http.StatusNotFound, "пользователь не найден")
 		return
 	}
 	writeJSON(w, http.StatusOK, user)
 }
 
-// UpdateUser обновляет пользователя
 func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -64,7 +62,7 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	var user models.User
 	if err := h.db.First(&user, id).Error; err != nil {
-		writeErr(w, http.StatusNotFound, "user not found")
+		writeErr(w, http.StatusNotFound, "пользователь не найден")
 		return
 	}
 
@@ -93,7 +91,6 @@ func (h *Handlers) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, user)
 }
 
-// DeleteUser удаляет пользователя и все его заметки
 func (h *Handlers) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -104,31 +101,26 @@ func (h *Handlers) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	var user models.User
 	if err := h.db.First(&user, id).Error; err != nil {
-		writeErr(w, http.StatusNotFound, "user not found")
+		writeErr(w, http.StatusNotFound, "пользователь не найден")
 		return
 	}
 
-	// Используем транзакцию для безопасного удаления
 	err = h.db.Transaction(func(tx *gorm.DB) error {
-		// Находим все заметки пользователя
 		var notes []models.Note
 		if err := tx.Where("user_id = ?", user.ID).Find(&notes).Error; err != nil {
 			return err
 		}
 
-		// Для каждой заметки удаляем связи с тегами
 		for _, note := range notes {
 			if err := tx.Model(&note).Association("Tags").Clear(); err != nil {
 				return err
 			}
 		}
 
-		// Удаляем все заметки пользователя
 		if err := tx.Where("user_id = ?", user.ID).Delete(&models.Note{}).Error; err != nil {
 			return err
 		}
 
-		// Удаляем самого пользователя
 		if err := tx.Delete(&user).Error; err != nil {
 			return err
 		}
@@ -141,7 +133,7 @@ func (h *Handlers) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]string{"message": "user and all associated notes deleted successfully"})
+	writeJSON(w, http.StatusOK, map[string]string{"message": "поьзователь и его заметки удалены})
 }
 
 type createNoteReq struct {
@@ -158,10 +150,9 @@ func (h *Handlers) CreateNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Проверка существования пользователя
 	var user models.User
 	if err := h.db.First(&user, in.UserID).Error; err != nil {
-		writeErr(w, http.StatusBadRequest, "user not found")
+		writeErr(w, http.StatusBadRequest, "пользователь не найден")
 		return
 	}
 
@@ -203,13 +194,12 @@ func (h *Handlers) GetNoteByID(w http.ResponseWriter, r *http.Request) {
 	}
 	var note models.Note
 	if err := h.db.Preload("User").Preload("Tags").First(&note, id).Error; err != nil {
-		writeErr(w, http.StatusNotFound, "note not found")
+		writeErr(w, http.StatusNotFound, "заметка не найден")
 		return
 	}
 	writeJSON(w, http.StatusOK, note)
 }
 
-// UpdateNote обрабатывает обновление заметки
 func (h *Handlers) UpdateNote(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -220,7 +210,7 @@ func (h *Handlers) UpdateNote(w http.ResponseWriter, r *http.Request) {
 
 	var note models.Note
 	if err := h.db.Preload("Tags").First(&note, id).Error; err != nil {
-		writeErr(w, http.StatusNotFound, "note not found")
+		writeErr(w, http.StatusNotFound, "заметка не найдена")
 		return
 	}
 
@@ -236,7 +226,6 @@ func (h *Handlers) UpdateNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Обновляем поля если они предоставлены
 	if in.Title != nil {
 		note.Title = *in.Title
 	}
@@ -244,16 +233,14 @@ func (h *Handlers) UpdateNote(w http.ResponseWriter, r *http.Request) {
 		note.Content = *in.Content
 	}
 	if in.UserID != nil {
-		// Проверяем существование пользователя
 		var user models.User
 		if err := h.db.First(&user, *in.UserID).Error; err != nil {
-			writeErr(w, http.StatusBadRequest, "user not found")
+			writeErr(w, http.StatusBadRequest, "пользователь не найден")
 			return
 		}
 		note.UserID = *in.UserID
 	}
 
-	// Обновляем теги если они предоставлены
 	if in.Tags != nil {
 		var tags []models.Tag
 		for _, name := range in.Tags {
@@ -265,7 +252,6 @@ func (h *Handlers) UpdateNote(w http.ResponseWriter, r *http.Request) {
 				tags = append(tags, t)
 			}
 		}
-		// Заменяем теги через ассоциации
 		h.db.Model(&note).Association("Tags").Replace(tags)
 	}
 
@@ -273,13 +259,10 @@ func (h *Handlers) UpdateNote(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	// Загружаем обновленные связи
 	h.db.Preload("User").Preload("Tags").First(&note, note.ID)
 	writeJSON(w, http.StatusOK, note)
 }
-
-// DeleteNote обрабатывает удаление заметки
+			  
 func (h *Handlers) DeleteNote(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -290,11 +273,10 @@ func (h *Handlers) DeleteNote(w http.ResponseWriter, r *http.Request) {
 
 	var note models.Note
 	if err := h.db.First(&note, id).Error; err != nil {
-		writeErr(w, http.StatusNotFound, "note not found")
+		writeErr(w, http.StatusNotFound, "заметка не найдена")
 		return
 	}
 
-	// Удаляем связи многие-ко-многим перед удалением заметки
 	if err := h.db.Model(&note).Association("Tags").Clear(); err != nil {
 		writeErr(w, http.StatusInternalServerError, err.Error())
 		return
@@ -305,10 +287,9 @@ func (h *Handlers) DeleteNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]string{"message": "note deleted successfully"})
+	writeJSON(w, http.StatusOK, map[string]string{"message": "заметка удалена"})
 }
 
-// helpers
 type jsonErr struct {
 	Error string `json:"error"`
 }
