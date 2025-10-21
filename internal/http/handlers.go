@@ -31,7 +31,7 @@ func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	u := models.User{Name: in.Name, Email: in.Email}
 	if err := h.db.Create(&u).Error; err != nil {
-		writeErr(w, http.StatusConflict, err.Error()) // возможен конфликт по unique email
+		writeErr(w, http.StatusConflict, err.Error())
 		return
 	}
 	writeJSON(w, http.StatusCreated, u)
@@ -41,7 +41,7 @@ type createNoteReq struct {
 	Title   string   `json:"title"`
 	Content string   `json:"content"`
 	UserID  uint     `json:"userId"`
-	Tags    []string `json:"tags"` // имена тегов
+	Tags    []string `json:"tags"`
 }
 
 func (h *Handlers) CreateNote(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +51,12 @@ func (h *Handlers) CreateNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Находим/создаём теги
+	var user models.User
+	if err := h.db.First(&user, in.UserID).Error; err != nil {
+		writeErr(w, http.StatusBadRequest, "пользователя нет")
+		return
+	}
+
 	var tags []models.Tag
 	for _, name := range in.Tags {
 		if name == "" {
@@ -73,7 +78,7 @@ func (h *Handlers) CreateNote(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	// Вернём с автором и тегами
+
 	if err := h.db.Preload("User").Preload("Tags").First(&note, note.ID).Error; err != nil {
 		writeErr(w, http.StatusInternalServerError, err.Error())
 		return
@@ -96,7 +101,34 @@ func (h *Handlers) GetNoteByID(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, note)
 }
 
-// helpers (единый JSON-ответ)
+func (h *Handlers) DeleteNote(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id <= 0 {
+		writeErr(w, http.StatusBadRequest, "bad id")
+		return
+	}
+
+	var note models.Note
+	if err := h.db.First(&note, id).Error; err != nil {
+		writeErr(w, http.StatusNotFound, "note not found")
+		return
+	}
+
+	if err := h.db.Model(&note).Association("Tags").Clear(); err != nil {
+		writeErr(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if err := h.db.Delete(&note).Error; err != nil {
+		writeErr(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{"message": "note deleted successfully"})
+}
+
+// helpers
 type jsonErr struct {
 	Error string `json:"error"`
 }
@@ -106,6 +138,7 @@ func writeJSON(w http.ResponseWriter, code int, v any) {
 	w.WriteHeader(code)
 	_ = json.NewEncoder(w).Encode(v)
 }
+
 func writeErr(w http.ResponseWriter, code int, msg string) {
 	writeJSON(w, code, jsonErr{Error: msg})
 }
